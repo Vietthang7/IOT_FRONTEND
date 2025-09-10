@@ -35,11 +35,11 @@ export default defineConfig({
       primary: "#133D85",
       secondary: "#004DE8",
       base: {
-        text: "#4C5262",
-        text_2: "#999999",
+        text: "#FFFFFF",
+        text_2: "#000000",
       },
       extra: {
-        2: "#B1B5C3",
+        2: "#000000",
       },
       bg: {
         primary: "#E1EDF1CC",
