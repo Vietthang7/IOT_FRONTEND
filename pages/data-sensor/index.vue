@@ -78,7 +78,7 @@ const sensorColumns = ref([
   { key: 'temp', label: 'Nhiệt độ' },
   { key: 'humidity', label: 'Độ ẩm' },
   { key: 'lux', label: 'Ánh sáng', },
-  { key: 'time', label: 'Thời gian', type: 'text' }
+  { key: 'time', label: 'Thời gian', type: 'datetime' }
 ])
 
 const sensorOptions = ref([

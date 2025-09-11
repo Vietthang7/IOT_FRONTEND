@@ -71,7 +71,13 @@
           <tr v-for="(item, index) in data" :key="index" class="hover:bg-gray-50">
             <td v-for="column in columns" :key="column.key" class="px-6 py-4 whitespace-nowrap text-sm"
               :class="getCellClass(column, item[column.key])">
-              <span v-if="column.type === 'status'" :class="getStatusClass(item[column.key])">
+              <span v-if="column.key === 'id'" class="text-gray-900">
+                {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+              </span>
+              <span v-else-if="column.type === 'datetime'" class="text-gray-900">
+                {{ formatDateTime(item[column.key]) }}
+              </span>
+              <span v-else-if="column.type === 'status'" :class="getStatusClass(item[column.key])">
                 {{ item[column.key] }}
               </span>
               <span v-else-if="column.type === 'link'" class="text-blue-600 hover:text-blue-800 cursor-pointer">
@@ -94,7 +100,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   // Data
   data: {
     type: Array,
@@ -190,6 +196,18 @@ const updateDateRange = (type, value) => {
 }
 
 // Helper functions
+const formatDateTime = (dateTimeString) => {
+  if (!dateTimeString) return '';
+  const date = new Date(dateTimeString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+}
+
 const getCellClass = (column, value) => {
   if (column.type === 'center') {
     return 'text-center'
