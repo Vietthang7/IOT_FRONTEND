@@ -7,7 +7,7 @@
       <StatisticsStatsCard title="Humidity" :value="`${statsCards[0].humidity}%`" icon="IconHumidity" color="pink" />
       <StatisticsStatsCard title="Light" :value="`${statsCards[0].lux} LUX`" icon="IconLight" color="blue" />
     </div>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 mt-10" style="margin-top: 50px">
       <div class="flex-1 rounded-lg p-1 shadow-md">
         <StatisticsSensorChart class="w-250" />
       </div>

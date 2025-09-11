@@ -5,13 +5,13 @@
       
       <div class="profile-content">
         <div class="avatar-section">
-          <img src="/avatar.png" alt="Profile Avatar" class="avatar" />
+          <img src="/img/obito.jpg" alt="Profile Avatar" class="avatar" />
         </div>
         
         <div class="info-section">
           <div class="info-item">
             <span class="label">Họ tên:</span>
-            <span class="value">Nguyễn Việt Thắng</span>
+            <span class="value">Nguyễn Viết Thắng</span>
           </div>
           
           <div class="info-item">
@@ -54,7 +54,6 @@ export default {
 <style scoped>
 .profile-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   justify-content: center;
   align-items: center;

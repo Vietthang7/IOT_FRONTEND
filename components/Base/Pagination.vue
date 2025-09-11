@@ -23,7 +23,7 @@
             <li v-for="n in pagesToShow" :key="n" class="mx-1">
               <button
                 class="flex items-center cursor-pointer justify-center rounded-full h-8 w-8 text-lg font-medium transition-all"
-                :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-base-text hover:bg-blue-100'"
+                :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-gray-700 hover:bg-blue-100 hover:text-blue-600'"
                 @click="changePage(n)">{{ n }}</button>
             </li>
           </ClientOnly>
