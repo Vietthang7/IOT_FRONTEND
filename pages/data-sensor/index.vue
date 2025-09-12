@@ -119,7 +119,6 @@ const handleFilterChange = (key, value) => {
   if (filter) {
     filter.value = value
   }
-  console.log('Filter changed:', key, value)
 }
 
 const handleDateChange = (date) => {
