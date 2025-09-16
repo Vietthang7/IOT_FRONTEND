@@ -1,19 +1,37 @@
 <template>
-  <div>    
-    <Line
-      v-if="chartData"
-      :data="chartData"
-      :options="chartOptions"
-    />
+  <div>
+    <!-- Header với title và nút refresh -->
+    <div class="flex items-center justify-end mb-4">
+      <button @click="handleRefresh" :disabled="isLoading"
+        class="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+        <svg :class="['w-4 h-4', { 'animate-spin': isLoading }]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>{{ isLoading ? 'Đang tải...' : 'Làm mới' }}</span>
+      </button>
+    </div>
 
-    <div v-else class="flex items-center justify-center h-64">
-      <p class="text-gray-500">Đang tải dữ liệu...</p>
+    <!-- Chart -->
+    <div class="bg-white rounded-lg border border-gray-200">
+      <Line v-if="chartData && !isLoading" :data="chartData" :options="chartOptions" />
+
+      <div v-else class="flex items-center justify-center h-64">
+        <div v-if="isLoading" class="flex flex-col items-center gap-2">
+          <svg class="animate-spin w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <p class="text-gray-500">Đang tải dữ liệu...</p>
+        </div>
+        <p v-else class="text-gray-500">Không có dữ liệu để hiển thị</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import {
   Chart as ChartJS,
   Title,
@@ -33,53 +51,77 @@ ChartJS.register(
   LinearScale, CategoryScale
 )
 
-// Dữ liệu gốc
-const data = ref([
-  { temp: '32.8', humidity: '66', lux: '2151', time: '2024-06-11 14:30:00' },
-  { temp: '30.8', humidity: '89', lux: '1000', time: '2024-06-12 14:30:00' },
-  { temp: '28', humidity: '70', lux: '1500', time: '2024-06-13 14:30:00' },
-  { temp: '20', humidity: '66', lux: '3000', time: '2024-06-13 14:31:00' },
-  { temp: '15', humidity: '90', lux: '1250', time: '2024-06-14 14:32:00' },
-  { temp: '32.8', humidity: '19', lux: '800', time: '2024-06-14 07:30:00' },
-  { temp: '32.8', humidity: '66', lux: '2151', time: '2025-06-11 14:30:00' },
-  { temp: '30.8', humidity: '89', lux: '1000', time: '2025-06-12 14:30:00' },
-  { temp: '28', humidity: '70', lux: '1500', time: '2025-06-13 14:30:00' },
-  { temp: '20', humidity: '66', lux: '3000', time: '2025-06-13 14:31:00' },
-  { temp: '15', humidity: '90', lux: '1250', time: '2025-06-14 14:32:00' },
-  { temp: '32.8', humidity: '19', lux: '800', time: '2025-06-14 07:30:00' }
-])
+// Define props
+const props = defineProps({
+  sensorData: {
+    type: Array,
+    default: () => []
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  }
+});
 
-// chartData luôn có labels + datasets
+// Define emits
+const emit = defineEmits(['refresh']);
+
+// Handle refresh button click
+const handleRefresh = () => {
+  emit('refresh');
+}
+
+// chartData computed từ props
 const chartData = computed(() => {
-  if (!data.value || data.value.length === 0) return null
+  if (!props.sensorData || props.sensorData.length === 0) {
+    return null;
+  }
+
+  const reversedData = [...props.sensorData].reverse();
+  console.log('📈 Chart data computed with', reversedData.length, 'records');
 
   return {
-    labels: data.value.map(d => d.time),
+    labels: reversedData.map(d => {
+      const date = new Date(d.time);
+      return date.toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }),
     datasets: [
       {
         label: 'Nhiệt độ (°C)',
-        data: data.value.map(d => parseFloat(d.temp)),
-        borderColor: 'red',
-        backgroundColor: 'red',
+        data: reversedData.map(d => parseFloat(d.temp)),
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
         yAxisID: 'y'
       },
       {
         label: 'Độ ẩm (%)',
-        data: data.value.map(d => parseFloat(d.humidity)),
-        borderColor: 'blue',
-        backgroundColor: 'blue',
+        data: reversedData.map(d => parseFloat(d.humidity)),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
         yAxisID: 'y'
       },
       {
         label: 'Ánh sáng (lux)',
-        data: data.value.map(d => parseFloat(d.lux)),
-        borderColor: 'green',
-        backgroundColor: 'green',
+        data: reversedData.map(d => parseFloat(d.lux)),
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
         yAxisID: 'y1'
       }
     ]
-  }
-})
+  };
+});
 
 // Cấu hình chart
 const chartOptions = {
@@ -92,23 +134,38 @@ const chartOptions = {
   plugins: {
     title: {
       display: true,
-      text: 'Biểu đồ 2 trục Y (Temp + Humidity / Lux)'
+      text: 'Biểu đồ 2 trục Y (Temp + Humidity / Lux)',
+      font: {
+        size: 14
+      }
+    },
+    legend: {
+      display: true,
+      position: 'top'
     }
   },
   scales: {
     y: {
       type: 'linear',
       display: true,
-      position: 'left'
+      position: 'left',
+      title: {
+        display: true,
+        text: 'Nhiệt độ (°C) / Độ ẩm (%)'
+      }
     },
     y1: {
       type: 'linear',
       display: true,
       position: 'right',
+      title: {
+        display: true,
+        text: 'Ánh sáng (lux)'
+      },
       grid: {
         drawOnChartArea: false
       }
     }
   }
-}
+};
 </script>
