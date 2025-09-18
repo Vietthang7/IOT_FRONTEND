@@ -19,7 +19,6 @@
             Short Cut
           </span>
         </div>
-
         <div class="space-y-4 mt-7">
           <div v-for="device in results.data.devices" :key="device.device_name"
             class="flex items-center justify-between">
@@ -108,13 +107,14 @@ const toggleDevice = async (device) => {
         action: newStatus
       }
     });
-    device.status = newStatus;
-    console.log(response.status)
+    if (response && (response.status === true || response.code === 200)) {
+      console.log(response.code)
+      device.status = newStatus;
+    }
   } catch (error) {
+    console.error(" Error controlling device:", error);
   } finally {
-    setTimeout(() => {
-      isToggling.value = false;
-    }, 1000);
+    isToggling.value = false;
   }
 }
 </script>
