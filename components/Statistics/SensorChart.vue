@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Header với title và nút refresh -->
+    <!-- Header với title và nút refresh
     <div class="flex items-center justify-end mb-4">
       <button @click="handleRefresh" :disabled="isLoading"
         class="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
@@ -10,7 +10,7 @@
         </svg>
         <span>{{ isLoading ? 'Đang tải...' : 'Làm mới' }}</span>
       </button>
-    </div>
+    </div> -->
 
     <!-- Chart -->
     <div class="bg-white rounded-lg border border-gray-200">
