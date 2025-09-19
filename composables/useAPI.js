@@ -47,6 +47,9 @@ class Request {
   async postDirect(url, options) {
     return await this.directFetch(url, "POST", options);
   }
+  async getDirect(url, options) {
+    return await this.directFetch(url, "GET", options);
+  }
   put(url, options) {
     return this.fetch(url, "PUT", options);
   }
@@ -67,6 +70,9 @@ class API {
   }
   async getDataSensor(data) {
     return this.request.get(`${API_ENDPOINTS.stores.data_sensor}`, data);
+  }
+  async getDataSensorv1(data) {
+    return this.request.getDirect(`${API_ENDPOINTS.stores.data_sensor}`, data);
   }
   async getListDevice(data) {
     return this.request.get(`${API_ENDPOINTS.stores.list_devices}`, data);
