@@ -10,58 +10,96 @@
         <span>{{ pageCount }}</span>
         kết quả
       </div>
-      <nav class="hidden md:block" v-if="totalPage > 1">
-        <ul class="p-0 m-0 flex flex-wrap justify-center items-center">
-          <li v-if="current > 1" class="mx-1">
-            <button
-              class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
-              @click="changePage(current - 1)">
-              <IconMuiTenTrai />
-            </button>
-          </li>
-          <ClientOnly>
+
+      <!-- ✅ THÊM DROPDOWN CHỌN SỐ LƯỢNG HIỂN THỊ -->
+      <div class="flex items-center gap-4">
+        <!-- Limit selector -->
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600 whitespace-nowrap">Hiển thị:</label>
+          <select 
+            :value="limit" 
+            @change="onLimitChange"
+            class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option v-for="option in limitOptions" :key="option" :value="option">
+              {{ option }}
+            </option>
+          </select>
+          <span class="text-sm text-gray-600 whitespace-nowrap">bản ghi</span>
+        </div>
+
+        <!-- Pagination navigation -->
+        <nav class="hidden md:block" v-if="totalPage > 1">
+          <ul class="p-0 m-0 flex flex-wrap justify-center items-center">
+            <li v-if="current > 1" class="mx-1">
+              <button
+                class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
+                @click="changePage(current - 1)">
+                <IconMuiTenTrai />
+              </button>
+            </li>
+            <ClientOnly>
+              <li v-for="n in pagesToShow" :key="n" class="mx-1">
+                <button
+                  class="flex items-center cursor-pointer justify-center rounded-full h-8 w-8 text-lg font-medium transition-all"
+                  :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-gray-700 hover:bg-blue-100 hover:text-blue-600'"
+                  @click="changePage(n)">{{ n }}</button>
+              </li>
+            </ClientOnly>
+            <li v-if="current < totalPage" class="mx-1">
+              <button
+                class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
+                @click="changePage(current + 1)">
+                <IconMuiTenPhai />
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Mobile pagination -->
+    <ClientOnly>
+      <div class="md:hidden mt-6" v-if="totalPage > 1">
+        <!-- Mobile limit selector -->
+        <div class="flex items-center justify-center gap-2 mb-4">
+          <label class="text-sm text-gray-600">Hiển thị:</label>
+          <select 
+            :value="limit" 
+            @change="onLimitChange"
+            class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option v-for="option in limitOptions" :key="option" :value="option">
+              {{ option }}
+            </option>
+          </select>
+          <span class="text-sm text-gray-600">bản ghi</span>
+        </div>
+
+        <!-- Mobile navigation -->
+        <nav>
+          <ul class="p-0 m-0 flex flex-wrap justify-center items-center">
+            <li v-if="current > 1" class="mx-1">
+              <button
+                class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
+                @click="changePage(current - 1)">
+                <IconMuiTenTrai />
+              </button>
+            </li>
             <li v-for="n in pagesToShow" :key="n" class="mx-1">
               <button
                 class="flex items-center cursor-pointer justify-center rounded-full h-8 w-8 text-lg font-medium transition-all"
-                :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-gray-700 hover:bg-blue-100 hover:text-blue-600'"
+                :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-base-text hover:bg-blue-100'"
                 @click="changePage(n)">{{ n }}</button>
             </li>
-          </ClientOnly>
-          <li v-if="current < totalPage" class="mx-1">
-            <button
-              class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
-              @click="changePage(current + 1)">
-              <IconMuiTenPhai />
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <ClientOnly>
-      <nav class="md:hidden mt-6" v-if="totalPage > 1">
-        <ul class="p-0 m-0 flex flex-wrap justify-center items-center">
-          <li v-if="current > 1" class="mx-1">
-            <button
-              class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
-              @click="changePage(current - 1)">
-              <IconMuiTenTrai />
-            </button>
-          </li>
-          <li v-for="n in pagesToShow" :key="n" class="mx-1">
-            <button
-              class="flex items-center cursor-pointer justify-center rounded-full h-8 w-8 text-lg font-medium transition-all"
-              :class="current === n ? 'bg-blue-800 text-white' : 'bg-transparent text-base-text hover:bg-blue-100'"
-              @click="changePage(n)">{{ n }}</button>
-          </li>
-          <li v-if="current < totalPage" class="mx-1">
-            <button
-              class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
-              @click="changePage(current + 1)">
-              <IconMuiTenPhai />
-            </button>
-          </li>
-        </ul>
-      </nav>
+            <li v-if="current < totalPage" class="mx-1">
+              <button
+                class="flex items-center cursor-pointer justify-center transition-all-200 ease-in-out bg-transparent rounded-full h-8 w-8 text-gray-600 text-lg"
+                @click="changePage(current + 1)">
+                <IconMuiTenPhai />
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </ClientOnly>
   </div>
 </template>
@@ -124,7 +162,7 @@ const pagesToShow = computed(() => {
 const from = computed(() => (props.pageCount === 0 ? 0 : (current.value - 1) * props.limit + 1))
 const to = computed(() => Math.min(current.value * props.limit, props.pageCount))
 
-const limitOptions = [10, 20, 50, 100]
+const limitOptions = [5, 10, 20, 50, 100]
 
 function changePage(page) {
   if (typeof page === "number" && page !== current.value && page >= 1 && page <= totalPage.value) {
@@ -133,10 +171,11 @@ function changePage(page) {
   }
 }
 
+// ✅ XỬ LÝ THAY ĐỔI LIMIT
 function onLimitChange(e) {
   const newLimit = Number(e.target.value)
   emit("update:limit", newLimit)
-  current.value = 1
+  current.value = 1  // Reset về trang 1 khi thay đổi limit
   emit("pageChanged", 1)
 }
 </script>

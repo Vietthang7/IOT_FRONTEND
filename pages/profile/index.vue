@@ -25,9 +25,15 @@
           </div>
           
           <div class="info-item">
-            <span class="label">Github Link:</span>
-            <a href="https://github.com/inet-corp/simv2-backend" target="_blank" class="link">
-              https://github.com/inet-corp/simv2-backend
+            <span class="label">GITHUB LINK:</span>
+            <a href="https://github.com/Vietthang7/IOT_BACKEND" target="_blank" class="link">
+              BE(Golang)
+            </a>
+            <a href="https://github.com/Vietthang7/IOT_FRONTEND" target="_blank" class="link">
+              FE(Vue3)
+            </a>
+            <a href="https://github.com/Vietthang7/IOT_PTIT" target="_blank" class="link">
+              IOT(C++,ESP32)
             </a>
           </div>
           

@@ -1,5 +1,4 @@
 <template>
-  <HeaderBanner />
   <div class="space-y-6 px-14 mt-[73px]">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-50">
       <StatisticsStatsCard title="Nhiệt độ" :value="`${latestSensorData.temp || 0}°C`" icon="IconTemperature"

@@ -56,7 +56,6 @@
         </div>
       </div>
 
-      <!-- Loading State -->
       <div v-if="loading" class="px-6 py-8 text-center">
         <div class="inline-flex items-center">
           <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-3"></div>
@@ -64,17 +63,14 @@
         </div>
       </div>
 
-      <!-- Empty State -->
       <div v-else-if="devices.length === 0" class="px-6 py-8 text-center">
         <IconDevice class="w-12 h-12 text-gray-300 mx-auto mb-2" />
         <p class="text-gray-500">Không có dữ liệu thiết bị</p>
       </div>
 
-      <!-- Table Body -->
       <div v-else>
         <div v-for="(device, index) in devices" :key="device.id"
           class="grid grid-cols-4 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-          <!-- ID Column -->
           <div class="flex items-center">
             <span class="text-sm font-medium text-gray-900">
               {{ (currentPage - 1) * itemsPerPage + index + 1 }}
@@ -108,13 +104,8 @@
 
     <!-- Pagination -->
     <div class="mt-6" v-if="totalRecords > 0">
-      <BasePagination
-        v-model:current="currentPage"
-        :pageCount="totalRecords"
-        :limit="itemsPerPage"
-        @pageChanged="onPageChanged"
-        @update:limit="onLimitChanged"
-      />
+      <BasePagination v-model:current="currentPage" :pageCount="totalRecords" :limit="itemsPerPage"
+        @pageChanged="onPageChanged" @update:limit="onLimitChanged" />
     </div>
   </div>
 </template>
@@ -142,37 +133,30 @@ const itemsPerPage = ref(10)
 const fetchData = async () => {
   try {
     loading.value = true
-    
-    // Tạo params cho API call
     const params = {
       page: currentPage.value,
-      limit: itemsPerPage.value,
+      length: itemsPerPage.value,
     }
 
     if (selectedDeviceType.value) {
       params.device_name = selectedDeviceType.value
     }
-    
+
     if (selectedStatus.value) {
       params.action = selectedStatus.value
     }
-    
+
     if (startDate.value) {
       params.start_time = startDate.value
     }
-    
+
     if (endDate.value) {
       params.end_time = endDate.value
     }
 
-    console.log('Calling API with params:', params)
-    
     const response = await restAPI.stores.getDeviceHistory({
       params
     })
-    
-    console.log('API Response:', response)
-    
     // Sửa logic xử lý response data
     if (response && response.data) {
       devices.value = response.data.value.data.data || []
@@ -234,7 +218,8 @@ const formatDateTime = (timestamp) => {
     year: 'numeric'
   }) + ' - ' + new Date(timestamp).toLocaleTimeString('vi-VN', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    second: '2-digit'  
   })
 }
 

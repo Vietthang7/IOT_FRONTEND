@@ -4,12 +4,22 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
       <div class="flex items-center gap-4 flex-wrap">
         <div class="flex-1 min-w-48">
-          <div class="flex gap-2">
-            <input v-model="startDate" type="date" placeholder="Từ ngày"
-              class="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <span class="flex items-center text-gray-500">-</span>
-            <input v-model="endDate" type="date" placeholder="Đến ngày"
-              class="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select v-model="selectedSensorType"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Tất cả</option>
+            <option value="den">Nhiệt độ</option>
+            <option value="quat">Độ ẩm</option>
+            <option value="dieuhoa">Ánh sáng</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-48">
+          <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian: 19/09/2025 - 22:24:12"
+            @blur="validateDateTime" :class="[
+              'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+              dateTimeError ? 'border-red-500' : 'border-gray-300'
+            ]">
+          <div v-if="dateTimeError" class="text-red-500 text-xs mt-1">
+            {{ dateTimeError }}
           </div>
         </div>
         <div class="flex items-end">
@@ -105,13 +115,8 @@
 
     <!-- Pagination -->
     <div class="mt-6" v-if="totalRecords > 0">
-      <BasePagination
-        v-model:current="currentPage"
-        :pageCount="totalRecords"
-        :limit="itemsPerPage"
-        @pageChanged="onPageChanged"
-        @update:limit="onLimitChanged"
-      />
+      <BasePagination v-model:current="currentPage" :pageCount="totalRecords" :limit="itemsPerPage"
+        @pageChanged="onPageChanged" @update:limit="onLimitChanged" />
     </div>
   </div>
 </template>
@@ -124,48 +129,86 @@ const { restAPI } = useAPI()
 const sensorData = ref([])
 const loading = ref(false)
 const totalRecords = ref(0)
-
 // Filter state
 const selectedSensorType = ref('')
-const selectedRange = ref('')
-const startDate = ref('')
-const endDate = ref('')
+const searchDateTime = ref('')
+const dateTimeError = ref('')
+const parsedDateTime = ref('')
 
 // Pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const dateTimePattern = /^(\d{2})\/(\d{2})\/(\d{4}) - (\d{2}):(\d{2}):(\d{2})$/
+const validateDateTime = () => {
+  dateTimeError.value = ''
 
+  if (!searchDateTime.value.trim()) {
+    parsedDateTime.value = ''
+    return
+  }
+
+  const match = searchDateTime.value.match(dateTimePattern)
+  if (!match) {
+    dateTimeError.value = 'Format không đúng: DD/MM/YYYY - HH:MM:SS'
+    parsedDateTime.value = ''
+    return
+  }
+
+  const [, day, month, year, hour, minute, second] = match
+
+  // Validate ranges
+  if (parseInt(month) < 1 || parseInt(month) > 12) {
+    dateTimeError.value = 'Tháng không hợp lệ (1-12)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(day) < 1 || parseInt(day) > 31) {
+    dateTimeError.value = 'Ngày không hợp lệ (1-31)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(hour) < 0 || parseInt(hour) > 23) {
+    dateTimeError.value = 'Giờ không hợp lệ (0-23)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(minute) < 0 || parseInt(minute) > 59) {
+    dateTimeError.value = 'Phút không hợp lệ (0-59)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(second) < 0 || parseInt(second) > 59) {
+    dateTimeError.value = 'Giây không hợp lệ (0-59)'
+    parsedDateTime.value = ''
+    return
+  }
+
+  // // Convert to MySQL datetime format: YYYY-MM-DD HH:MM:SS
+  // parsedDateTime.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour}:${minute}:${second}`
+}
 // Methods
 const fetchData = async () => {
   try {
     loading.value = true
-    
+
     // Tạo params cho API call
     const params = {
       page: currentPage.value,
-      limit: itemsPerPage.value,
+      length: itemsPerPage.value,
     }
 
     if (selectedSensorType.value) {
       params.sensor_type = selectedSensorType.value
     }
-    
-    if (selectedRange.value) {
-      params.range = selectedRange.value
+
+    if (parsedDateTime.value) {
+      params.search_time = parsedDateTime.value
     }
-    
-    if (startDate.value) {
-      params.start_time = startDate.value
-    }
-    
-    if (endDate.value) {
-      params.end_time = endDate.value
-    }
-    params.sort = "true"    
+    params.sort = "true"
     const response = await restAPI.stores.getDataSensor({
       params
     })
-    
+
     if (response && response.data) {
       sensorData.value = response.data.value.data.data || []
       totalRecords.value = response.data.value.data.pagination?.total || 0
@@ -182,15 +225,23 @@ const fetchData = async () => {
 }
 
 const applyFilters = () => {
+  // Validate trước khi search
+  validateDateTime()
+
+  if (searchDateTime.value && dateTimeError.value) {
+    // Không search nếu có lỗi format
+    return
+  }
+
   currentPage.value = 1
   fetchData()
 }
 
 const resetFilters = () => {
   selectedSensorType.value = ''
-  selectedRange.value = ''
-  startDate.value = ''
-  endDate.value = ''
+  searchDateTime.value = ''
+  parsedDateTime.value = ''
+  dateTimeError.value = ''
   currentPage.value = 1
   fetchData()
 }
@@ -233,7 +284,8 @@ const formatDateTime = (timestamp) => {
     year: 'numeric'
   }) + ' - ' + new Date(timestamp).toLocaleTimeString('vi-VN', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    second: '2-digit'
   })
 }
 // Lifecycle
