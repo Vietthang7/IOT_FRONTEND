@@ -1,4 +1,11 @@
 <template>
+  <!-- <div v-if="showError"
+    class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300">
+    <div class="flex items-center gap-2">
+      <IconClose class="w-4 h-4" />
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div> -->
   <div class="space-y-6 px-14 mt-[73px]">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-50">
       <StatisticsStatsCard title="Nhiệt độ" :value="`${latestSensorData.temp || 0}°C`" icon="IconTemperature"
@@ -24,25 +31,74 @@
         <div class="space-y-4 mt-7">
           <div v-if="results?.data?.devices?.length > 0">
             <div v-for="device in results.data.devices" :key="device.device_name"
-              class="flex items-center justify-between">
-              <div class="flex items-center gap-5">
-                <div class="rounded-lg flex items-center justify-center">
-                  <IconLed v-if="device.device_name === 'den'"
-                    class="text-white bg-#FF7A50 p-2 rounded-lg h-[60px] w-[60px]" />
-                  <IconFan v-else-if="device.device_name === 'quat'"
-                    class="text-white bg-#9350FF p-2 rounded-lg h-[60px] w-[60px] my-2" />
-                  <IconAir v-else-if="device.device_name === 'dieuhoa'"
-                    class="text-white bg-#AAAAAA p-2 rounded-lg h-15 w-15 mt-2" />
-                </div>
-                <span class="font-medium capitalize">{{ getDeviceName(device.device_name) }}</span>
+              class="group relative overflow-hidden bg-gradient-to-r from-gray-50 to-white p-5 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 hover:transform hover:scale-102 mb-5">
+
+              <div
+                class=" absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" :checked="device.status === 'ON'" class="sr-only peer"
-                  @change="toggleDevice(device)" />
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+
+              <div class="relative z-10 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="relative">
+                    <div v-if="device.status === 'ON'" class="absolute inset-0 rounded-2xl blur-md opacity-30" :class="{
+                      'bg-orange-400': device.device_name === 'den',
+                      'bg-purple-400': device.device_name === 'quat',
+                      'bg-blue-400': device.device_name === 'dieuhoa'
+                    }"></div>
+
+                    <!-- Icon Container -->
+                    <div
+                      class="relative p-4 rounded-2xl transition-all duration-300 group-hover:transform group-hover:rotate-6 gap-2"
+                      :class="{
+                        'bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 shadow-orange-500/25': device.device_name === 'den',
+                        'bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 shadow-purple-500/25': device.device_name === 'quat',
+                        'bg-gradient-to-br from-blue-400 via-blue-500 to-cyan-600 shadow-blue-500/25': device.device_name === 'dieuhoa'
+                      }">
+
+                      <IconLed v-if="device.device_name === 'den'" class="w-8 h-8 text-white drop-shadow-lg"
+                        :class="{ 'animate-pulse': device.status === 'ON' }" />
+                      <IconFan v-else-if="device.device_name === 'quat'"
+                        class="w-8 h-8 text-white drop-shadow-lg transition-transform duration-500 "
+                        :class="{ 'animate-spin': device.status === 'ON' }" />
+                      <IconAir v-else-if="device.device_name === 'dieuhoa'" class="w-8 h-8 text-white drop-shadow-lg" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
+                      {{ getDeviceName(device.device_name) }}
+                    </h4>
+                    <p class="text-sm transition-colors"
+                      :class="device.status === 'ON' ? 'text-green-600 font-medium' : 'text-gray-500'">
+                      {{ device.status === 'ON' ? 'Đang hoạt động' : 'Tắt' }}
+                    </p>
+                  </div>
                 </div>
-              </label>
+
+                <div class="flex items-center gap-3">
+                  <div class="px-3 py-1 rounded-full text-xs font-semibold transition-all duration-300" :class="device.status === 'ON'
+                    ? 'bg-green-100 text-green-700 shadow-green-100'
+                    : 'bg-gray-100 text-gray-600'">
+                    {{ device.status === 'ON' ? 'ON' : 'OFF' }}
+                  </div>
+
+                  <!-- Premium Toggle Switch -->
+                  <label class="relative inline-flex items-center cursor-pointer group/toggle">
+                    <input type="checkbox" :checked="device.status === 'ON'" class="sr-only peer"
+                      @change="toggleDevice(device)" :disabled="isToggling" />
+
+                    <!-- Switch Background -->
+                    <div
+                      class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300/20 rounded-full peer transition-all duration-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-600 shadow-lg hover:shadow-xl group-hover/toggle:scale-105">
+
+                      <!-- Inner glow when ON -->
+                      <div v-if="device.status === 'ON'"
+                        class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse">
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           <div v-else-if="isLoadingDevices" class="text-center py-4">
@@ -75,7 +131,9 @@ const latestSensorData = ref({
   humidity: 0,
   lux: 0
 })
-
+// Thêm ref cho toast/notification
+const errorMessage = ref('')
+const showError = ref(false)
 let statsPollingInterval = null
 let chartPollingInterval = null
 
@@ -189,13 +247,34 @@ const toggleDevice = async (device) => {
       }
     })
 
-    if (response && (response.status === true || response.code === 200)) {
+    // SỬA: Kiểm tra chặt chẽ hơn response từ API
+    const isSuccess = (
+      response && (
+        response.code === 200 ||
+        response.status === true ||
+        (response.data && response.data.code === 200) ||
+        (response.data && response.data.status === true)
+      )
+    )
+
+    if (isSuccess) {
+      // Chỉ update UI khi API thành công
       device.status = newStatus
+      console.log(`✅ Device ${device.device_name} updated to ${newStatus}`)
+    } else {
+      // API fail - không update UI và show error
+      console.error(`❌ API failed for ${device.device_name}:`, response)
+
+      // Có thể thêm toast notification ở đây
+      showErrorToast(`Không thể điều khiển ${getDeviceName(device.device_name)}`)
     }
+
   } catch (error) {
-    console.error("Error controlling device:", error)
+    console.error("❌ Error controlling device:", error)
   } finally {
-    isToggling.value = false
+    setTimeout(() => {
+      isToggling.value = false
+    }, 1000) // Delay để tránh spam click
   }
 }
 const getDeviceName = (deviceType) => {
@@ -222,4 +301,13 @@ onUnmounted(() => {
 onBeforeRouteLeave(() => {
   stopPolling()
 })
+// Trong toggleDevice, thay alert bằng:
+const showErrorToast = (message) => {
+  errorMessage.value = message
+  showError.value = true
+
+  setTimeout(() => {
+    showError.value = false
+  }, 3000)
+}
 </script>

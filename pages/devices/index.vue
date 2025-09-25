@@ -21,14 +21,8 @@
           </select>
         </div>
         <div class="flex-1 min-w-48 relative">
-          <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian: 19/09/2025 - 22:24:12"
-            @blur="validateDateTime" :class="[
-              'w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-              dateTimeError ? 'border-red-500' : 'border-gray-300'
-            ]">
-          <div v-if="dateTimeError" class="absolute top-full left-0 text-red-500 text-xs mt-1 z-10 bg-white px-1">
-            {{ dateTimeError }}
-          </div>
+          <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian để tìm kiếm..."
+            class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300">
         </div>
         <div class="flex items-end">
           <button @click="applyFilters"
@@ -98,6 +92,13 @@
           <!-- Time Column -->
           <div class="flex items-center">
             <span class="text-sm text-gray-600">{{ formatDateTime(device.time) }}</span>
+            <button @click="copyToClipboard(formatDateTime(device.time), device.id)" :class="[
+              'ml-2 p-1 rounded hover:bg-gray-100 transition-colors',
+              copiedId === device.id ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
+            ]" :title="copiedId === device.id ? 'Đã copy!' : 'Copy thời gian'">
+              <IconCheck v-if="copiedId === device.id" class="w-4 h-4" />
+              <IconCopy v-else class="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -124,13 +125,14 @@ const totalRecords = ref(0)
 const selectedDeviceType = ref('')
 const searchDateTime = ref('')
 const selectedStatus = ref('')
-const startDate = ref('')
-const endDate = ref('')
-
+const parsedDateTime = ref('')
 // Pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
+// Copy state
+const copiedId = ref(null)
+const copyTimeout = ref(null)
 // Methods
 const fetchData = async () => {
   try {
@@ -147,24 +149,15 @@ const fetchData = async () => {
     if (selectedStatus.value) {
       params.action = selectedStatus.value
     }
-
-    if (startDate.value) {
-      params.start_time = startDate.value
+    if (parsedDateTime.value) {
+      params.search_time = parsedDateTime.value
     }
-
-    if (endDate.value) {
-      params.end_time = endDate.value
-    }
-
     const response = await restAPI.stores.getDeviceHistory({
       params
     })
-    // Sửa logic xử lý response data
     if (response && response.data) {
       devices.value = response.data.value.data.data || []
       totalRecords.value = response.data.value.data.pagination?.total || 0
-      console.log('Devices loaded:', devices.value.length)
-      console.log('Total records:', totalRecords.value)
     } else {
       devices.value = []
       totalRecords.value = 0
@@ -179,15 +172,15 @@ const fetchData = async () => {
 }
 
 const applyFilters = () => {
+  parsedDateTime.value = searchDateTime.value.trim()
   currentPage.value = 1
   fetchData()
 }
-
 const resetFilters = () => {
   selectedDeviceType.value = ''
+  searchDateTime.value = ''
+  parsedDateTime.value = ''
   selectedStatus.value = ''
-  startDate.value = ''
-  endDate.value = ''
   currentPage.value = 1
   fetchData()
 }
@@ -214,65 +207,64 @@ const getDeviceName = (deviceType) => {
 
 const formatDateTime = (timestamp) => {
   if (!timestamp) return ''
-  return new Date(timestamp).toLocaleDateString('vi-VN', {
-    day: '2-digit',
+
+  return new Date(timestamp).toLocaleString('sv-SE', {
+    year: 'numeric',
     month: '2-digit',
-    year: 'numeric'
-  }) + ' - ' + new Date(timestamp).toLocaleTimeString('vi-VN', {
+    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
-  })
-}
-const validateDateTime = () => {
-  dateTimeError.value = ''
-
-  if (!searchDateTime.value.trim()) {
-    parsedDateTime.value = ''
-    return
-  }
-
-  const match = searchDateTime.value.match(dateTimePattern)
-  if (!match) {
-    dateTimeError.value = 'Format không đúng: DD/MM/YYYY - HH:MM:SS'
-    parsedDateTime.value = ''
-    return
-  }
-
-  const [, day, month, year, hour, minute, second] = match
-
-  // Validate ranges
-  if (parseInt(month) < 1 || parseInt(month) > 12) {
-    dateTimeError.value = 'Tháng không hợp lệ (1-12)'
-    parsedDateTime.value = ''
-    return
-  }
-  if (parseInt(day) < 1 || parseInt(day) > 31) {
-    dateTimeError.value = 'Ngày không hợp lệ (1-31)'
-    parsedDateTime.value = ''
-    return
-  }
-  if (parseInt(hour) < 0 || parseInt(hour) > 23) {
-    dateTimeError.value = 'Giờ không hợp lệ (0-23)'
-    parsedDateTime.value = ''
-    return
-  }
-  if (parseInt(minute) < 0 || parseInt(minute) > 59) {
-    dateTimeError.value = 'Phút không hợp lệ (0-59)'
-    parsedDateTime.value = ''
-    return
-  }
-  if (parseInt(second) < 0 || parseInt(second) > 59) {
-    dateTimeError.value = 'Giây không hợp lệ (0-59)'
-    parsedDateTime.value = ''
-    return
-  }
-
-  // // Convert to MySQL datetime format: YYYY-MM-DD HH:MM:SS
-  // parsedDateTime.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour}:${minute}:${second}`
+    second: '2-digit',
+    hour12: false
+  }).replace(',', '')
 }
 // Lifecycle
 onMounted(() => {
   fetchData()
+})
+const copyToClipboard = async (text, recordId) => {
+  try {
+    await navigator.clipboard.writeText(text)
+
+    if (copyTimeout.value) {
+      clearTimeout(copyTimeout.value)
+    }
+
+    copiedId.value = recordId
+
+    // Reset after 2 seconds
+    copyTimeout.value = setTimeout(() => {
+      copiedId.value = null
+    }, 2000)
+
+    console.log('✅ Copied to clipboard:', text)
+  } catch (error) {
+    console.error('❌ Failed to copy:', error)
+
+    // Fallback for older browsers
+    try {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      copiedId.value = recordId
+      copyTimeout.value = setTimeout(() => {
+        copiedId.value = null
+      }, 2000)
+
+    } catch (fallbackError) {
+      console.error('❌ Fallback copy also failed:', fallbackError)
+    }
+  }
+}
+
+// Cleanup timeout on unmount
+onBeforeUnmount(() => {
+  if (copyTimeout.value) {
+    clearTimeout(copyTimeout.value)
+  }
 })
 </script>

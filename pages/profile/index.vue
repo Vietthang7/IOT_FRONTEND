@@ -5,7 +5,7 @@
       
       <div class="profile-content">
         <div class="avatar-section">
-          <img src="/img/obito.jpg" alt="Profile Avatar" class="avatar" />
+          <img src="/img/obito1.jpg" alt="Profile Avatar" class="avatar" />
         </div>
         
         <div class="info-section">
@@ -30,7 +30,7 @@
               BE(Golang)
             </a>
             <a href="https://github.com/Vietthang7/IOT_FRONTEND" target="_blank" class="link">
-              FE(Vue3)
+              FE(Nuxt 4)
             </a>
             <a href="https://github.com/Vietthang7/IOT_PTIT" target="_blank" class="link">
               IOT(C++,ESP32)
@@ -42,8 +42,9 @@
           </div>
           
           <div class="info-item">
-            <span class="label">Api Docs :</span>
-            <span class="value">Postman Document</span>
+            <a href="https://documenter.getpostman.com/view/35594163/2sB3QCTtwp" target="_blank" class="link">
+              Postman Document (API)
+            </a>
           </div>
         </div>
       </div>
