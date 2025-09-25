@@ -2,10 +2,11 @@
   <div class="space-y-6 px-14 mt-[73px]">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-50">
       <StatisticsStatsCard title="Nhiệt độ" :value="`${latestSensorData.temp || 0}°C`" icon="IconTemperature"
-        color="green" />
-      <StatisticsStatsCard title="Độ ẩm" :value="`${latestSensorData.humidity || 0}%`" icon="IconHumidity"
         color="pink" />
-      <StatisticsStatsCard title="Ánh sáng" :value="`${latestSensorData.lux || 0} LUX`" icon="IconLight" color="blue" />
+      <StatisticsStatsCard title="Độ ẩm" :value="`${latestSensorData.humidity || 0}%`" icon="IconHumidity"
+        color="blue" />
+      <StatisticsStatsCard title="Ánh sáng" :value="`${latestSensorData.lux || 0} LUX`" icon="IconLight"
+        color="green" />
     </div>
 
     <div class="flex items-center gap-4 mt-10" style="margin-top: 50px">
@@ -33,7 +34,7 @@
                   <IconAir v-else-if="device.device_name === 'dieuhoa'"
                     class="text-white bg-#AAAAAA p-2 rounded-lg h-15 w-15 mt-2" />
                 </div>
-                <span class="font-medium capitalize">{{ device.device_name }}</span>
+                <span class="font-medium capitalize">{{ getDeviceName(device.device_name) }}</span>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" :checked="device.status === 'ON'" class="sr-only peer"
@@ -155,7 +156,7 @@ const startStatsPolling = () => {
 
   statsPollingInterval = setInterval(() => {
     fetchLatestSensorData()
-  }, 2000)
+  }, 6000)
 }
 
 const stopPolling = () => {
@@ -189,7 +190,6 @@ const toggleDevice = async (device) => {
     })
 
     if (response && (response.status === true || response.code === 200)) {
-      console.log(response.code)
       device.status = newStatus
     }
   } catch (error) {
@@ -198,7 +198,14 @@ const toggleDevice = async (device) => {
     isToggling.value = false
   }
 }
-
+const getDeviceName = (deviceType) => {
+  const names = {
+    'dieuhoa': 'Điều hòa',
+    'quat': 'Quạt',
+    'den': 'Đèn'
+  }
+  return names[deviceType] || deviceType
+}
 onMounted(async () => {
   await Promise.all([
     fetchDataDevices(),

@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-const greeting = ref('Hi, obito ! Good Evening...')
+const greeting = ref('Hi, obito ! Good Afternoon...')
 const message = ref('Welcome Home, it\'s snowing outside stay safe')
 const currentDate = ref('')
 const currentTime = ref('')

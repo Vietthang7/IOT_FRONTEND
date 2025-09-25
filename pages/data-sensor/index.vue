@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto p-4">
     <!-- Filter Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-8 mb-6">
       <div class="flex items-center gap-4 flex-wrap">
         <div class="flex-1 min-w-48">
           <select v-model="selectedSensorType"
@@ -12,13 +12,13 @@
             <option value="dieuhoa">Ánh sáng</option>
           </select>
         </div>
-        <div class="flex-1 min-w-48">
+        <div class="flex-1 min-w-48 relative">
           <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian: 19/09/2025 - 22:24:12"
             @blur="validateDateTime" :class="[
-              'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+              'w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
               dateTimeError ? 'border-red-500' : 'border-gray-300'
             ]">
-          <div v-if="dateTimeError" class="text-red-500 text-xs mt-1">
+          <div v-if="dateTimeError" class="absolute top-full left-0 text-red-500 text-xs mt-1 z-10 bg-white px-1">
             {{ dateTimeError }}
           </div>
         </div>

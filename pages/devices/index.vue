@@ -20,13 +20,14 @@
             <option value="OFF">Tắt</option>
           </select>
         </div>
-        <div class="flex-1 min-w-48">
-          <div class="flex gap-2">
-            <input v-model="startDate" type="date" placeholder="Từ ngày"
-              class="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <span class="flex items-center text-gray-500">-</span>
-            <input v-model="endDate" type="date" placeholder="Đến ngày"
-              class="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="flex-1 min-w-48 relative">
+          <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian: 19/09/2025 - 22:24:12"
+            @blur="validateDateTime" :class="[
+              'w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+              dateTimeError ? 'border-red-500' : 'border-gray-300'
+            ]">
+          <div v-if="dateTimeError" class="absolute top-full left-0 text-red-500 text-xs mt-1 z-10 bg-white px-1">
+            {{ dateTimeError }}
           </div>
         </div>
         <div class="flex items-end">
@@ -121,6 +122,7 @@ const totalRecords = ref(0)
 
 // Filter state
 const selectedDeviceType = ref('')
+const searchDateTime = ref('')
 const selectedStatus = ref('')
 const startDate = ref('')
 const endDate = ref('')
@@ -219,10 +221,56 @@ const formatDateTime = (timestamp) => {
   }) + ' - ' + new Date(timestamp).toLocaleTimeString('vi-VN', {
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'  
+    second: '2-digit'
   })
 }
+const validateDateTime = () => {
+  dateTimeError.value = ''
 
+  if (!searchDateTime.value.trim()) {
+    parsedDateTime.value = ''
+    return
+  }
+
+  const match = searchDateTime.value.match(dateTimePattern)
+  if (!match) {
+    dateTimeError.value = 'Format không đúng: DD/MM/YYYY - HH:MM:SS'
+    parsedDateTime.value = ''
+    return
+  }
+
+  const [, day, month, year, hour, minute, second] = match
+
+  // Validate ranges
+  if (parseInt(month) < 1 || parseInt(month) > 12) {
+    dateTimeError.value = 'Tháng không hợp lệ (1-12)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(day) < 1 || parseInt(day) > 31) {
+    dateTimeError.value = 'Ngày không hợp lệ (1-31)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(hour) < 0 || parseInt(hour) > 23) {
+    dateTimeError.value = 'Giờ không hợp lệ (0-23)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(minute) < 0 || parseInt(minute) > 59) {
+    dateTimeError.value = 'Phút không hợp lệ (0-59)'
+    parsedDateTime.value = ''
+    return
+  }
+  if (parseInt(second) < 0 || parseInt(second) > 59) {
+    dateTimeError.value = 'Giây không hợp lệ (0-59)'
+    parsedDateTime.value = ''
+    return
+  }
+
+  // // Convert to MySQL datetime format: YYYY-MM-DD HH:MM:SS
+  // parsedDateTime.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour}:${minute}:${second}`
+}
 // Lifecycle
 onMounted(() => {
   fetchData()
