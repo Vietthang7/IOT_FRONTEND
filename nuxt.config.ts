@@ -6,9 +6,13 @@ export default defineNuxtConfig({
   css: ["@/assets/main.css", "@/assets/tailwind.css"],
   runtimeConfig: {
     public: {
-      baseUrl: "http://127.0.0.1:3002/api",
+      baseUrl: "http://127.0.0.1:3002/",
       adminUrl: "",
       propertyID: "",
     },
+  },
+  // Thêm cấu hình để expose server
+  devServer: {
+    host: '0.0.0.0'
   },
 });

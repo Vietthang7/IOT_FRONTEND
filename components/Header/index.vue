@@ -1,25 +1,171 @@
+<!-- filepath: c:\IOT\Frontend\components\Header\index.vue -->
 <template>
   <header class="px-9 pb-0 pt-9">
     <div class="flex items-center justify-end">
-      <div class="flex items-center ">
+      <div class="flex items-center">
         <div class="flex items-center space-x-7">
           <HeaderAvatar />
           <div class="hidden md:block">
             <div class="text-sm font-medium text-base-text-2">Nguyễn Viết<br />Thắng</div>
           </div>
-          <!-- Menu Button -->
-          <button class="bg-transparent border-none outline-none focus:outline-none hover:bg-gray-100 p-2 rounded-lg transition-colors">
-            <svg width="9" height="33" viewBox="0 0 9 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M4.50178 12.25C3.99596 12.25 3.49509 12.3496 3.02777 12.5432C2.56046 12.7368 2.13584 13.0205 1.77818 13.3782C1.42051 13.7358 1.13679 14.1604 0.943222 14.6277C0.749653 15.0951 0.650025 15.5959 0.650025 16.1017C0.650025 16.6076 0.749653 17.1084 0.943222 17.5758C1.13679 18.0431 1.42051 18.4677 1.77818 18.8253C2.13584 19.183 2.56046 19.4667 3.02777 19.6603C3.49509 19.8539 3.99596 19.9535 4.50178 19.9535C5.52332 19.9533 6.50294 19.5472 7.22512 18.8247C7.9473 18.1022 8.35288 17.1224 8.35265 16.1009C8.35242 15.0793 7.94639 14.0997 7.22388 13.3775C6.50137 12.6554 5.52157 12.2498 4.50002 12.25H4.50178ZM4.50178 7.7C5.00736 7.69977 5.50796 7.59996 5.97497 7.40627C6.44199 7.21257 6.86628 6.92879 7.22362 6.57112C7.58097 6.21346 7.86436 5.78891 8.05763 5.32171C8.2509 4.85452 8.35025 4.35384 8.35002 3.84825C8.34979 3.34266 8.24998 2.84207 8.05629 2.37505C7.8626 1.90804 7.57882 1.48374 7.22115 1.1264C6.86348 0.769059 6.43893 0.485663 5.97174 0.292394C5.50455 0.0991261 5.00386 -0.000229415 4.49827 3.97764e-07C3.47719 0.000464542 2.49811 0.406533 1.77643 1.12888C1.05474 1.85122 0.649561 2.83067 0.650025 3.85175C0.650489 4.87283 1.05656 5.85191 1.7789 6.5736C2.50124 7.29529 3.48069 7.70046 4.50178 7.7ZM4.50178 24.5C3.48023 24.5 2.50052 24.9058 1.77818 25.6281C1.05583 26.3505 0.650025 27.3302 0.650025 28.3517C0.650025 29.3733 1.05583 30.353 1.77818 31.0753C2.50052 31.7977 3.48023 32.2035 4.50178 32.2035C5.52332 32.2035 6.50303 31.7977 7.22537 31.0753C7.94772 30.353 8.35352 29.3733 8.35352 28.3517C8.35352 27.3302 7.94772 26.3505 7.22537 25.6281C6.50303 24.9058 5.52332 24.5 4.50178 24.5Z"
-                fill="currentColor" />
-            </svg>
-          </button>
+          
+          <!-- Menu Dropdown -->
+          <div class="relative" ref="dropdownRef">
+            <button 
+              @click="toggleDropdown"
+              class="bg-transparent border-none outline-none focus:outline-none hover:bg-gray-100 p-2 rounded-lg transition-colors"
+              :class="{ 'bg-blue-900': isDropdownOpen }"
+            >
+              <IconMenu />
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div 
+              v-if="isDropdownOpen"
+              class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animateZoomIn"
+            >
+              <!-- Contact Admin Option -->
+              <button
+                @click="handleContactAdmin"
+                class="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-3"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>Liên hệ Admin</span>
+              </button>
+
+              <!-- Divider -->
+              <div class="border-t border-gray-100 my-1"></div>
+
+              <!-- Logout Option -->
+              <button
+                @click="handleLogout"
+                :disabled="isLoggingOut"
+                class="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div v-if="isLoggingOut" class="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span>{{ isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất' }}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </header>
 </template>
+
 <script setup>
-const route = useRoute()
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import IconMenu from '~/components/global/IconMenu.vue'
+
+const router = useRouter()
+
+// Dropdown state
+const isDropdownOpen = ref(false)
+const isLoggingOut = ref(false)
+const dropdownRef = ref(null)
+
+// Toggle dropdown
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    isDropdownOpen.value = false
+  }
+}
+
+// Handle contact admin (placeholder for future implementation)
+const handleContactAdmin = () => {
+  isDropdownOpen.value = false
+}
+
+// Handle logout
+const handleLogout = async () => {
+  if (isLoggingOut.value) return
+  
+  try {
+    isLoggingOut.value = true
+    isDropdownOpen.value = false
+    
+    // Clear authentication data
+    const authToken = useCookie('auth-token')
+    const userInfo = useCookie('user-info')
+    
+    // Remove cookies
+    authToken.value = null
+    userInfo.value = null
+    console.log('✅ Logged out successfully')
+    
+    // Redirect to login page
+    await router.push('/login')
+    
+  } catch (error) {
+    console.error('❌ Logout error:', error)
+    
+    // Even if there's an error, try to clear local data and redirect
+    try {
+      const authToken = useCookie('auth-token')
+      const userInfo = useCookie('user-info')
+      authToken.value = null
+      userInfo.value = null
+      await router.push('/login')
+    } catch (fallbackError) {
+      console.error('❌ Fallback logout also failed:', fallbackError)
+      // Force page reload as last resort
+      window.location.href = '/login'
+    }
+  } finally {
+    isLoggingOut.value = false
+  }
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// Close dropdown when route changes
+watch(() => router.currentRoute.value.path, () => {
+  isDropdownOpen.value = false
+})
 </script>
+
+<style scoped>
+/* Ensure dropdown appears above other elements */
+.z-50 {
+  z-index: 50;
+}
+
+/* Enhanced dropdown animation */
+.animateZoomIn {
+  animation: dropdownZoomIn 0.2s ease-out;
+}
+
+@keyframes dropdownZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Smooth hover transitions */
+.transition-colors {
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+</style>

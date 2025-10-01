@@ -1,9 +1,10 @@
 const API_ENDPOINTS = {
   stores: {
-    device_history: "/device_history",
-    data_sensor: "/data_sensor",
-    list_devices: "/list_devices",
-    control_device: "/control_device",
+    login: "/auth/login",
+    device_history: "api/device_history",
+    data_sensor: "api/data_sensor",
+    list_devices: "api/list_devices",
+    control_device: "api/control_device",
   },
 };
 class Request {
@@ -11,10 +12,24 @@ class Request {
     this.baseURL = useRuntimeConfig().public.baseUrl;
     this.headers = {};
   }
-  fetch(url, method, options) {
+  // ✅ THÊM METHOD LẤY TOKEN
+  getAuthToken() {
+    const token = useCookie("auth-token");
+    return token.value;
+  }
+  // ✅ SET AUTH HEADERS TỰ ĐỘNG
+  setAuthHeaders() {
+    const token = this.getAuthToken();
     this.headers = {
       "Content-type": "application/json",
     };
+
+    if (token) {
+      this.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  fetch(url, method, options) {
+    this.setAuthHeaders(); // ✅ TỰ ĐỘNG THÊM TOKEN
 
     return useFetch(url, {
       baseURL: this.baseURL,
@@ -25,9 +40,7 @@ class Request {
   }
   // Thêm method cho $fetch (không cache, thực thi mỗi lần gọi)
   async directFetch(url, method, options) {
-    this.headers = {
-      "Content-type": "application/json",
-    };
+    this.setAuthHeaders(); // ✅ TỰ ĐỘNG THÊM TOKEN
 
     return await $fetch(url, {
       baseURL: this.baseURL,
@@ -65,6 +78,9 @@ class API {
   constructor(request) {
     this.request = request;
   }
+  async login(data) {
+    return this.request.postDirect(`${API_ENDPOINTS.stores.login}`, data);
+  }
   async getDeviceHistory(data) {
     return this.request.get(`${API_ENDPOINTS.stores.device_history}`, data);
   }
@@ -78,7 +94,10 @@ class API {
     return this.request.get(`${API_ENDPOINTS.stores.list_devices}`, data);
   }
   async conTrolDevice(data) {
-    return this.request.postDirect(`${API_ENDPOINTS.stores.control_device}`, data);
+    return this.request.postDirect(
+      `${API_ENDPOINTS.stores.control_device}`,
+      data
+    );
   }
 }
 

@@ -6,14 +6,14 @@
         <div class="flex-1 min-w-48">
           <select v-model="selectedSensorType"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">Tất cả</option>
+            <option value="all">Tất cả</option>
             <option value="temp">Nhiệt độ</option>
             <option value="humidity">Độ ẩm</option>
             <option value="lux">Ánh sáng</option>
           </select>
         </div>
         <div class="flex-1 min-w-48 relative">
-          <input v-model="searchDateTime" type="text" placeholder="Nhập thời gian để tìm kiếm..."
+          <input v-model="searchDateTime" type="text" placeholder="Nhập để tìm kiếm..."
             class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300">
         </div>
         <div class="flex items-end">
@@ -33,26 +33,55 @@
 
     <!-- Data Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <!-- Table Header - DYNAMIC COLUMNS -->
+      <!-- Table Header - FIXED 5 COLUMNS -->
       <div class="bg-gray-100 border-b border-gray-200">
-        <div class="grid gap-4 p-4 py-4" :style="{ gridTemplateColumns: `repeat(${getColumnCount()}, 1fr)` }">
+        <div class="grid grid-cols-5 gap-4 p-4 py-4">
           <div class="text-left text-base font-semibold text-primary tracking-wider">STT</div>
-
-          <!-- Hiện cột Nhiệt độ nếu type_sensor = '' hoặc 'temp' -->
-          <div v-if="showTempColumn" class="text-left text-base font-semibold text-primary tracking-wider">
-            Nhiệt độ
+          <div class="text-left text-base font-semibold text-primary tracking-wider">
+            <button @click="handleSort('temp')" class="flex items-center gap-2 hover:text-blue-600 transition-colors">
+              <span>Nhiệt độ</span>
+              <div class="w-4 h-4">
+                <IconArrowUp v-if="sortType === 'temp' && sortOrder === 'asc'" class="w-4 h-4 text-blue-600" />
+                <IconArrowDown v-else-if="sortType === 'temp' && sortOrder === 'desc'" class="w-4 h-4 text-blue-600" />
+                <svg v-else class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </div>
+            </button>
           </div>
 
-          <!-- Hiện cột Độ ẩm nếu type_sensor = '' hoặc 'humidity' -->
-          <div v-if="showHumidityColumn" class="text-left text-base font-semibold text-primary tracking-wider">
-            Độ ẩm
+          <!-- Humidity - Sortable -->
+          <div class="text-left text-base font-semibold text-primary tracking-wider">
+            <button @click="handleSort('humidity')"
+              class="flex items-center gap-2 hover:text-blue-600 transition-colors">
+              <span>Độ ẩm</span>
+              <div class="w-4 h-4">
+                <IconArrowUp v-if="sortType === 'humidity' && sortOrder === 'asc'" class="w-4 h-4 text-blue-600" />
+                <IconArrowDown v-else-if="sortType === 'humidity' && sortOrder === 'desc'"
+                  class="w-4 h-4 text-blue-600" />
+                <svg v-else class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </div>
+            </button>
           </div>
 
-          <!-- Hiện cột Ánh sáng nếu type_sensor = '' hoặc 'lux' -->
-          <div v-if="showLuxColumn" class="text-left text-base font-semibold text-primary tracking-wider">
-            Ánh sáng
+          <!-- Light - Sortable -->
+          <div class="text-left text-base font-semibold text-primary tracking-wider">
+            <button @click="handleSort('lux')" class="flex items-center gap-2 hover:text-blue-600 transition-colors">
+              <span>Ánh sáng</span>
+              <div class="w-4 h-4">
+                <IconArrowUp v-if="sortType === 'lux' && sortOrder === 'asc'" class="w-4 h-4 text-blue-600" />
+                <IconArrowDown v-else-if="sortType === 'lux' && sortOrder === 'desc'" class="w-4 h-4 text-blue-600" />
+                <svg v-else class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </div>
+            </button>
           </div>
-
           <div class="text-left text-base font-semibold text-primary tracking-wider">Thời gian</div>
         </div>
       </div>
@@ -71,11 +100,10 @@
         <p class="text-gray-500">Không có dữ liệu cảm biến</p>
       </div>
 
-      <!-- Table Body - DYNAMIC COLUMNS -->
+      <!-- Table Body - FIXED 5 COLUMNS -->
       <div v-else>
         <div v-for="(record, index) in sensorData" :key="record.id"
-          class="grid gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors"
-          :style="{ gridTemplateColumns: `repeat(${getColumnCount()}, 1fr)` }">
+          class="grid grid-cols-5 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
 
           <!-- STT Column -->
           <div class="flex items-center">
@@ -84,8 +112,8 @@
             </span>
           </div>
 
-          <!-- Temperature Column - CONDITIONAL -->
-          <div v-if="showTempColumn" class="flex items-center">
+          <!-- Temperature Column -->
+          <div class="flex items-center">
             <div class="flex items-center gap-2">
               <IconTemperature class="w-4 h-4 text-red-500" />
               <span class="text-sm font-medium" :class="getTempClass(record.temp)">
@@ -94,8 +122,8 @@
             </div>
           </div>
 
-          <!-- Humidity Column - CONDITIONAL -->
-          <div v-if="showHumidityColumn" class="flex items-center">
+          <!-- Humidity Column -->
+          <div class="flex items-center">
             <div class="flex items-center gap-2">
               <IconHumidity class="w-4 h-4 text-blue-500" />
               <span class="text-sm font-medium" :class="getHumidityClass(record.humidity)">
@@ -104,8 +132,8 @@
             </div>
           </div>
 
-          <!-- Light Column - CONDITIONAL -->
-          <div v-if="showLuxColumn" class="flex items-center">
+          <!-- Light Column -->
+          <div class="flex items-center">
             <div class="flex items-center gap-2">
               <IconLight class="w-4 h-4 text-yellow-500" />
               <span class="text-sm font-medium" :class="getLightClass(record.lux)">
@@ -138,53 +166,51 @@
 </template>
 
 <script setup>
-
 const { restAPI } = useAPI()
+import IconArrowUp from '~/components/global/IconArrowUp.vue'
+import IconArrowDown from '~/components/global/IconArrowDown.vue'
 
 // Reactive state
 const sensorData = ref([])
 const loading = ref(false)
 const totalRecords = ref(0)
+
 // Filter state
-const selectedSensorType = ref('')
+const selectedSensorType = ref('all')
 const searchDateTime = ref('')
-const parsedDateTime = ref('')
-const type_sensor = ref('')
+const searchData = ref('')
+
+const sortType = ref('')  // 'temp', 'humidity', 'lux'
+const sortOrder = ref('desc')  // Mặc định là 'desc' như logic ban đầu
+
 // Copy state
 const copiedId = ref(null)
 const copyTimeout = ref(null)
+
 // Pagination state
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
-// COMPUTED PROPERTIES - Xác định hiển thị cột nào
-const showTempColumn = computed(() => {
-  return type_sensor.value === '' || type_sensor.value === 'temp'
-})
+// ✅ SORT METHODS
+const handleSort = (field) => {
+  if (sortType.value === field) {
+    // Toggle order nếu cùng field
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    // Field mới, bắt đầu với desc (logic hiện tại)
+    sortType.value = field
+    sortOrder.value = 'desc'
+  }
 
-const showHumidityColumn = computed(() => {
-  return type_sensor.value === '' || type_sensor.value === 'humidity'
-})
-
-const showLuxColumn = computed(() => {
-  return type_sensor.value === '' || type_sensor.value === 'lux'
-})
-
-const getColumnCount = () => {
-  let columnCount = 2 // STT + Thời gian luôn có
-
-  if (showTempColumn.value) columnCount++
-  if (showHumidityColumn.value) columnCount++
-  if (showLuxColumn.value) columnCount++
-
-  return columnCount
+  currentPage.value = 1
+  fetchData()
 }
+
 // Methods
 const fetchData = async () => {
   try {
     loading.value = true
 
-    // Tạo params cho API call
     const params = {
       page: currentPage.value,
       length: itemsPerPage.value,
@@ -194,22 +220,27 @@ const fetchData = async () => {
       params.sensor_type = selectedSensorType.value
     }
 
-    if (parsedDateTime.value) {
-      params.search_time = parsedDateTime.value
+    if (searchData.value) {
+      params.search_data = searchData.value
     }
-    params.sort = "true"
-    const response = await restAPI.stores.getDataSensor({
+
+    // THÊM SORT PARAMS
+    if (sortType.value && sortOrder.value) {
+      params.sort_type = sortType.value
+      params.sort_order = sortOrder.value
+    } else {
+      params.sort = "true"
+    }
+
+    const response = await restAPI.stores.getDataSensorv1({
       params
     })
-
-    if (response && response.data) {
-      sensorData.value = response.data.value.data.data || []
-      totalRecords.value = response.data.value.data.pagination?.total || 0
-      type_sensor.value = response.data.value.data.sensor_type
+    if (response && response.data.data) {
+      sensorData.value = response.data.data || []
+      totalRecords.value = response.data.pagination?.total || 0
     } else {
       sensorData.value = []
       totalRecords.value = 0
-      type_sensor.value = ''
     }
   } catch (error) {
     sensorData.value = []
@@ -220,16 +251,20 @@ const fetchData = async () => {
 }
 
 const applyFilters = () => {
-  parsedDateTime.value = searchDateTime.value.trim()
+  searchData.value = searchDateTime.value.trim()
   currentPage.value = 1
   fetchData()
 }
 
-
 const resetFilters = () => {
-  selectedSensorType.value = ''
+  selectedSensorType.value = 'all'
   searchDateTime.value = ''
-  parsedDateTime.value = ''
+  searchData.value = ''
+
+  // RESET SORT về mặc định
+  sortType.value = ''
+  sortOrder.value = 'desc'
+
   currentPage.value = 1
   fetchData()
 }
@@ -277,10 +312,6 @@ const formatDateTime = (timestamp) => {
     hour12: false
   }).replace(',', '')
 }
-// Lifecycle
-onMounted(() => {
-  fetchData()
-})
 
 const copyToClipboard = async (text, recordId) => {
   try {
@@ -322,10 +353,19 @@ const copyToClipboard = async (text, recordId) => {
   }
 }
 
+// Lifecycle
+onMounted(() => {
+  fetchData()
+})
+await fetchData()
+
 // Cleanup timeout on unmount
 onBeforeUnmount(() => {
   if (copyTimeout.value) {
     clearTimeout(copyTimeout.value)
   }
+})
+definePageMeta({
+  middleware: 'auth'
 })
 </script>

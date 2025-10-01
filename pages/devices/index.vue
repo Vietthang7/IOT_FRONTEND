@@ -222,6 +222,7 @@ const formatDateTime = (timestamp) => {
 onMounted(() => {
   fetchData()
 })
+await fetchData()
 const copyToClipboard = async (text, recordId) => {
   try {
     await navigator.clipboard.writeText(text)
@@ -266,5 +267,8 @@ onBeforeUnmount(() => {
   if (copyTimeout.value) {
     clearTimeout(copyTimeout.value)
   }
+})
+definePageMeta({
+  middleware: 'auth'
 })
 </script>

@@ -30,7 +30,7 @@
               BE(Golang)
             </a>
             <a href="https://github.com/Vietthang7/IOT_FRONTEND" target="_blank" class="link">
-              FE(Nuxt 4)
+              FE(Vuejs:Nuxt4)
             </a>
             <a href="https://github.com/Vietthang7/IOT_PTIT" target="_blank" class="link">
               IOT(C++,ESP32)
@@ -64,7 +64,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
 }
 
 .profile-card {
