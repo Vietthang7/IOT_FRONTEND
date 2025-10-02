@@ -1,48 +1,78 @@
 <template>
-  <div class="profile-container">
-    <div class="profile-card">
-      <h1 class="profile-title">My profile</h1>
+  <div class="max-h-200 flex justify-center items-center p-0">
+    <div class="bg-[#3949ab] rounded-20px p-3 lg:p-8 max-w-800px w-full text-white shadow-xl lg:shadow-2xl">
+      <h1 class="text-center txt-3xl lg:text-4xl mb-4 lg:mb-4 font-light">My profile</h1>
       
-      <div class="profile-content">
-        <div class="avatar-section">
-          <img src="/img/obito1.jpg" alt="Profile Avatar" class="avatar" />
+      <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center lg:items-start">
+        <!-- Avatar Section -->
+        <div class="flex-shrink-0">
+          <img 
+            src="/img/obito1.jpg" 
+            alt="Profile Avatar" 
+            class="w-150px h-150px lg:w-200px lg:h-200px rounded-15px object-cover border-3 border-white/20"
+          />
         </div>
         
-        <div class="info-section">
-          <div class="info-item">
-            <span class="label">Họ tên:</span>
-            <span class="value">Nguyễn Viết Thắng</span>
+        <!-- Info Section -->
+        <div class="flex-1 flex flex-col gap-4 lg:gap-5 text-center lg:text-left w-full">
+          <!-- Họ tên -->
+          <div class="flex flex-col gap-1">
+            <span class="txt-lg font-medium opacity-90">Họ tên:</span>
+            <span class="txt-xl font-light">Nguyễn Viết Thắng</span>
           </div>
           
-          <div class="info-item">
-            <span class="label">Mã sinh viên:</span>
-            <span class="value">B22DCCN815</span>
+          <!-- Mã sinh viên -->
+          <div class="flex flex-col gap-1">
+            <span class="txt-lg font-medium opacity-90">Mã sinh viên:</span>
+            <span class="txt-xl font-light">B22DCCN815</span>
           </div>
           
-          <div class="info-item">
-            <span class="label">IOT Class:</span>
-            <span class="value">IOT-15</span>
+          <!-- IOT Class -->
+          <div class="flex flex-col gap-1">
+            <span class="txt-lg font-medium opacity-90">IOT Class:</span>
+            <span class="txt-xl font-light">IOT-15</span>
           </div>
           
-          <div class="info-item">
-            <span class="label">GITHUB LINK:</span>
-            <a href="https://github.com/Vietthang7/IOT_BACKEND" target="_blank" class="link">
-              BE(Golang)
-            </a>
-            <a href="https://github.com/Vietthang7/IOT_FRONTEND" target="_blank" class="link">
-              FE(Vuejs:Nuxt4)
-            </a>
-            <a href="https://github.com/Vietthang7/IOT_PTIT" target="_blank" class="link">
-              IOT(C++,ESP32)
-            </a>
+          <!-- GitHub Links -->
+          <div class="flex flex-col gap-1">
+            <span class="txt-lg font-medium opacity-90">GITHUB LINK:</span>
+            <div class="flex flex-col gap-2">
+              <a 
+                href="https://github.com/Vietthang7/IOT_BACKEND" 
+                target="_blank" 
+                class="text-[#81c784] no-underline txt-lg transition-colors duration-300 hover:text-[#a5d6a7] hover:underline"
+              >
+                BE(Golang)
+              </a>
+              <a 
+                href="https://github.com/Vietthang7/IOT_FRONTEND" 
+                target="_blank" 
+                class="text-[#81c784] no-underline txt-lg transition-colors duration-300 hover:text-[#a5d6a7] hover:underline"
+              >
+                FE(Vuejs:Nuxt4)
+              </a>
+              <a 
+                href="https://github.com/Vietthang7/IOT_PTIT" 
+                target="_blank" 
+                class="text-[#81c784] no-underline txt-lg transition-colors duration-300 hover:text-[#a5d6a7] hover:underline"
+              >
+                IOT(C++,ESP32)
+              </a>
+            </div>
           </div>
           
-          <div class="info-item">
-            <span class="label">PDF LINK</span>
+          <!-- PDF Link Section -->
+          <div class="flex flex-col gap-1">
+            <span class="txt-lg font-medium opacity-90">PDF LINK</span>
           </div>
           
-          <div class="info-item">
-            <a href="https://documenter.getpostman.com/view/35594163/2sB3QCTtwp" target="_blank" class="link">
+          <!-- Postman Document -->
+          <div class="flex flex-col gap-1">
+            <a 
+              href="https://documenter.getpostman.com/view/35594163/2sB3QCTtwp" 
+              target="_blank" 
+              class="text-[#81c784] no-underline txt-lg transition-colors duration-300 hover:text-[#a5d6a7] hover:underline"
+            >
               Postman Document (API)
             </a>
           </div>
@@ -52,105 +82,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ProfilePage'
-}
+<script setup>
+definePageMeta({
+  middleware: 'auth'
+})
 </script>
-
-<style scoped>
-.profile-container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-}
-
-.profile-card {
-  background: #3949ab;
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 800px;
-  width: 100%;
-  color: white;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.profile-title {
-  text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 40px;
-  font-weight: 300;
-}
-
-.profile-content {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-}
-
-.avatar-section {
-  flex-shrink: 0;
-}
-
-.avatar {
-  width: 200px;
-  height: 200px;
-  border-radius: 15px;
-  object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-}
-
-.info-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.label {
-  font-size: 1.1rem;
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-.value {
-  font-size: 1.2rem;
-  font-weight: 300;
-}
-
-.link {
-  color: #81c784;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: color 0.3s ease;
-}
-
-.link:hover {
-  color: #a5d6a7;
-  text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .profile-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .avatar {
-    width: 150px;
-    height: 150px;
-  }
-  
-  .profile-title {
-    font-size: 2rem;
-  }
-}
-</style>

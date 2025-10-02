@@ -1,9 +1,9 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-0">
     <!-- Filter Section - Giữ nguyên -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-8 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 lg:py-3 py-1 lg:mb-4 mb-2">
       <div class="flex items-center gap-4 flex-wrap">
-        <div class="flex-1 min-w-48">
+        <div class="flex-1 lg:max-w-90">
           <select v-model="selectedSensorType"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="all">Tất cả</option>
@@ -12,7 +12,7 @@
             <option value="lux">Ánh sáng</option>
           </select>
         </div>
-        <div class="flex-1 min-w-48 relative">
+        <div class="flex-1 lg:min-w-48 relative">
           <input v-model="searchDateTime" type="text" placeholder="Nhập để tìm kiếm..."
             class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300">
         </div>
@@ -35,7 +35,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <!-- Table Header - FIXED 5 COLUMNS -->
       <div class="bg-gray-100 border-b border-gray-200">
-        <div class="grid grid-cols-5 gap-4 p-4 py-4">
+        <div class="grid grid-cols-5 gap-4 p-1 lg:p-2">
           <div class="text-left text-base font-semibold text-primary tracking-wider">STT</div>
           <div class="text-left text-base font-semibold text-primary tracking-wider">
             <button @click="handleSort('temp')" class="flex items-center gap-2 hover:text-blue-600 transition-colors">
@@ -103,7 +103,7 @@
       <!-- Table Body - FIXED 5 COLUMNS -->
       <div v-else>
         <div v-for="(record, index) in sensorData" :key="record.id"
-          class="grid grid-cols-5 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          class="grid grid-cols-5 gap-4 px-6 py-1.5 lg:py-2.1 border-b border-gray-100 hover:bg-gray-50 transition-colors">
 
           <!-- STT Column -->
           <div class="flex items-center">
@@ -158,7 +158,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-6" v-if="totalRecords > 0">
+    <div class="mt-6 pb-0" v-if="totalRecords > 0">
       <BasePagination v-model:current="currentPage" :pageCount="totalRecords" :limit="itemsPerPage"
         @pageChanged="onPageChanged" @update:limit="onLimitChanged" />
     </div>

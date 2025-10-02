@@ -1,12 +1,30 @@
-<!-- filepath: c:\IOT\Frontend\components\Header\index.vue -->
 <template>
-  <header class="px-9 pb-0 pt-9">
-    <div class="flex items-center justify-end">
-      <div class="flex items-center">
-        <div class="flex items-center space-x-7">
+  <header class="px-4 lg:px-9 pb-0 pt-4 lg:pt-9 bg-white  border-gray-200 sticky top-0 z-30">
+    <div class="flex items-center justify-between">
+      <!-- Mobile Menu Button -->
+      <button @click="$emit('toggle-mobile-menu')"
+              class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      
+      <!-- Logo for mobile (hidden on desktop where sidebar shows it) -->
+      <div class="lg:hidden flex items-center">
+        <IconHome class="w-8 h-8 text-primary mr-2" />
+        <span class="text-lg font-bold text-primary">SMART HOME</span>
+      </div>
+      
+      <!-- User Info -->
+      <div class="flex items-center ml-auto">
+        <div class="flex items-center space-x-3 lg:space-x-7">
           <HeaderAvatar />
-          <div class="hidden md:block">
-            <div class="text-sm font-medium text-base-text-2">Nguyễn Viết<br />Thắng</div>
+          <div class="hidden sm:block">
+            <div class="text-sm font-medium text-base-text-2">
+              <span class="hidden lg:inline">Nguyễn Viết<br />Thắng</span>
+              <span class="lg:hidden">N.V.Thắng</span>
+            </div>
           </div>
           
           <!-- Menu Dropdown -->
@@ -14,7 +32,7 @@
             <button 
               @click="toggleDropdown"
               class="bg-transparent border-none outline-none focus:outline-none hover:bg-gray-100 p-2 rounded-lg transition-colors"
-              :class="{ 'bg-blue-900': isDropdownOpen }"
+              :class="{ 'bg-blue-50': isDropdownOpen }"
             >
               <IconMenu />
             </button>
@@ -30,25 +48,22 @@
                 class="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-3"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span>Liên hệ Admin</span>
+                <span class="text-sm">Contact Admin</span>
               </button>
-
-              <!-- Divider -->
-              <div class="border-t border-gray-100 my-1"></div>
-
+              
               <!-- Logout Option -->
               <button
                 @click="handleLogout"
                 :disabled="isLoggingOut"
-                class="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 disabled:opacity-50"
               >
-                <div v-if="isLoggingOut" class="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                <svg v-if="!isLoggingOut" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span>{{ isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất' }}</span>
+                <div v-else class="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-sm">{{ isLoggingOut ? 'Logging out...' : 'Logout' }}</span>
               </button>
             </div>
           </div>
@@ -59,6 +74,7 @@
 </template>
 
 <script setup>
+defineEmits(['toggle-mobile-menu'])
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import IconMenu from '~/components/global/IconMenu.vue'
@@ -90,26 +106,26 @@ const handleContactAdmin = () => {
 // Handle logout
 const handleLogout = async () => {
   if (isLoggingOut.value) return
-  
+
   try {
     isLoggingOut.value = true
     isDropdownOpen.value = false
-    
+
     // Clear authentication data
     const authToken = useCookie('auth-token')
     const userInfo = useCookie('user-info')
-    
+
     // Remove cookies
     authToken.value = null
     userInfo.value = null
     console.log('✅ Logged out successfully')
-    
+
     // Redirect to login page
     await router.push('/login')
-    
+
   } catch (error) {
     console.error('❌ Logout error:', error)
-    
+
     // Even if there's an error, try to clear local data and redirect
     try {
       const authToken = useCookie('auth-token')
@@ -158,6 +174,7 @@ watch(() => router.currentRoute.value.path, () => {
     opacity: 0;
     transform: scale(0.95) translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);

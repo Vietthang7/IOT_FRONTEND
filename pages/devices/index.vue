@@ -1,7 +1,7 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-0">
     <!-- Filter Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 lg:py-3 py-1 lg:mb-4 mb-2">
       <div class="flex items-center gap-4 flex-wrap">
         <div class="flex-1 min-w-48">
           <select v-model="selectedDeviceType"
@@ -43,7 +43,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <!-- Table Header -->
       <div class="bg-gray-100 border-b border-gray-200">
-        <div class="grid grid-cols-4 gap-4 p-4 py-4">
+        <div class="grid grid-cols-4 gap-4 p-1 lg:p-2">
           <div class="text-left text-base font-semibold text-primary tracking-wider">STT</div>
           <div class="text-left text-base font-semibold text-primary tracking-wider">Thiết bị</div>
           <div class="text-left text-base font-semibold text-primary tracking-wider">Hành động</div>
@@ -65,7 +65,7 @@
 
       <div v-else>
         <div v-for="(device, index) in devices" :key="device.id"
-          class="grid grid-cols-4 gap-4 px-6 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          class="grid grid-cols-4 gap-4 py-1.5 px-6 lg:py-2.1 border-b border-gray-100 hover:bg-gray-50 transition-colors">
           <div class="flex items-center">
             <span class="text-sm font-medium text-gray-900">
               {{ (currentPage - 1) * itemsPerPage + index + 1 }}

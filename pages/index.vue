@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-6 px-14 mt-[73px]">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-50">
+  <div class="space-y-4 md:space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-15">
       <StatisticsStatsCard title="Nhiệt độ" :value="`${latestSensorData.temp || 0}°C`" icon="IconTemperature"
         color="pink" />
       <StatisticsStatsCard title="Độ ẩm" :value="`${latestSensorData.humidity || 0}%`" icon="IconHumidity"
@@ -8,20 +8,15 @@
       <StatisticsStatsCard title="Ánh sáng" :value="`${latestSensorData.lux || 0} LUX`" icon="IconLight"
         color="green" />
     </div>
-
-    <div class="flex items-center gap-4 mt-10" style="margin-top: 50px">
-      <div class="flex-1 rounded-lg p-1 shadow-md">
-        <StatisticsSensorChart class="w-250" :sensor-data="sensorData" :is-loading="isSensorLoading"
-          @refresh="handleSensorRefresh" />
+    <!-- Chart and Controls -->
+    <div class="flex flex-col xl:flex-row gap-8 lg:gap-6">
+      <!-- Chart Section -->
+      <div class="flex-1 rounded-lg p-3 lg:p-4 max-h-[700px] max-w-[700px] mr-20">
+        <StatisticsSensorChart :sensor-data="sensorData" :is-loading="isSensorLoading" />
       </div>
-      <div class="flex-1 rounded-lg p-10 shadow-md">
-        <div class="flex items-center gap-3">
-          <IconShortCut />
-          <span class="text-lg font-semibold">
-            Short Cut
-          </span>
-        </div>
-        <div class="space-y-4 mt-7">
+      <!-- Device Controls Section -->
+      <div class="w-full xl:w-96 2xl:w[28rem] rounded-lg p-0">
+        <div class="space-y-4">
           <div v-if="results?.data?.devices?.length > 0">
             <div v-for="device in results.data.devices" :key="device.device_name"
               class="group relative overflow-hidden bg-gradient-to-r from-gray-50 to-white p-5 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 hover:transform hover:scale-102 mb-5">
@@ -218,9 +213,6 @@ const stopPolling = () => {
   }
 }
 
-const handleSensorRefresh = async () => {
-  await fetchSensorData()
-}
 
 const toggleDevice = async (device) => {
   if (isToggling.value) return
