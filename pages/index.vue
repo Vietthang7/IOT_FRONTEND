@@ -150,9 +150,11 @@ const fetchDataDevices = async () => {
 
 // API 2: Fetch chart data (chỉ gọi khi refresh hoặc lần đầu)
 const fetchSensorData = async () => {
-  isSensorLoading.value = true
+  if (sensorData.value.length === 0) {
+    isSensorLoading.value = true
+  }
   try {
-    const { data } = await restAPI.stores.getDataSensor({
+    const response = await restAPI.stores.getDataSensorv1({
       params: {
         page: 1,
         length: 12,
@@ -160,7 +162,7 @@ const fetchSensorData = async () => {
       }
     })
 
-    const sensorDataArray = data.value?.data?.data || []
+    const sensorDataArray = response.data?.data || []
     sensorData.value = sensorDataArray
 
   } catch (error) {
@@ -171,7 +173,7 @@ const fetchSensorData = async () => {
   }
 }
 
-// API 3: Fetch latest sensor data cho stats cards (polling 2s)
+// API 3: Fetch latest sensor data cho stats cards (polling 6s)
 const fetchLatestSensorData = async () => {
   try {
     const { data } = await restAPI.stores.getDataSensorv1({
@@ -199,6 +201,13 @@ const startStatsPolling = () => {
 
   statsPollingInterval = setInterval(() => {
     fetchLatestSensorData()
+  }, 6000)
+}
+const startChartPolling = () => {
+  fetchSensorData() // Gọi ngay lập tức
+
+  chartPollingInterval = setInterval(() => {
+    fetchSensorData()
   }, 6000)
 }
 
@@ -263,17 +272,11 @@ const getDeviceName = (deviceType) => {
   }
   return names[deviceType] || deviceType
 }
-await Promise.all([
-  fetchDataDevices(),
-  fetchSensorData()
-])
+await fetchDataDevices()
 onMounted(async () => {
-  await Promise.all([
-    fetchDataDevices(),
-    fetchSensorData()
-  ])
-
-  startStatsPolling()
+  await fetchDataDevices()     // 1. Fetch devices 1 lần
+  startStatsPolling()          // 2. Start stats polling (6s)
+  startChartPolling()  
 })
 
 onUnmounted(() => {

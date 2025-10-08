@@ -10,6 +10,7 @@
             <option value="temp">Nhiệt độ</option>
             <option value="humidity">Độ ẩm</option>
             <option value="lux">Ánh sáng</option>
+            <option value="time">Thời gian</option>
           </select>
         </div>
         <div class="flex-1 lg:min-w-48 relative">

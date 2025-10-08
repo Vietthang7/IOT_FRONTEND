@@ -1,3 +1,4 @@
+<!-- filepath: c:\IOT\Frontend\components\Statistics\StatsCard.vue -->
 <template>
   <div class="group relative overflow-hidden rounded-xl lg:rounded-2xl p-4 lg:p-6 text-white shadow-xl transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl"
     :class="dynamicColorClass">
@@ -77,22 +78,31 @@ const colorClasses = {
   blue: 'bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-blue-500/25',
   orange: 'bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 shadow-orange-500/25',
   purple: 'bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 shadow-purple-500/25',
-  yellow: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 shadow-yellow-500/25'
+  yellow: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 shadow-yellow-500/25',
+  // ✅ THÊM MÀU TỐI CHO ÁNH SÁNG YẾU
+  dark: 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 shadow-gray-700/25',
+  // ✅ MÀU XANH LÁ BT CHO ÁNH SÁNG VỪA
+  lightGreen: 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-emerald-500/25'
 }
 
-// Computed để xác định màu động cho card ánh sáng
+// ✅ Computed để xác định màu động dựa trên giá trị ánh sáng
 const dynamicColorClass = computed(() => {
-  // Kiểm tra nếu đây là card ánh sáng và giá trị > 600
-  if (props.title === 'lux' || props.title.toLowerCase().includes('lux')) {
+  // Kiểm tra nếu đây là card ánh sáng
+  if (props.title === 'Ánh sáng' || props.title.toLowerCase().includes('ánh sáng')) {
     // Extract numeric value từ string (loại bỏ "LUX", khoảng trắng...)
     const numericValue = parseInt(props.value.replace(/[^\d]/g, '')) || 0
     
-    if (numericValue > 600) {
-      return colorClasses.yellow
+    // ✅ Logic màu theo giá trị:
+    if (numericValue <= 100) {
+      return colorClasses.dark // Tối
+    } else if (numericValue > 100 && numericValue <= 500) {
+      return colorClasses.lightGreen // Xanh bình thường
+    } else {
+      return colorClasses.yellow // Vàng (sáng)
     }
   }
   
-  // Trả về màu mặc định
+  // Trả về màu mặc định cho các card khác
   return colorClasses[props.color] || colorClasses.blue
 })
 </script>
