@@ -1,6 +1,6 @@
 <template>
   <div class="group relative overflow-hidden rounded-xl lg:rounded-2xl p-4 lg:p-6 text-white shadow-xl transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl"
-    :class="colorClasses[color]">
+    :class="dynamicColorClass">
     
     <!-- Animated background pattern -->
     <div class="absolute inset-0 opacity-20">
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: true
@@ -76,6 +76,23 @@ const colorClasses = {
   pink: 'bg-gradient-to-br from-pink-400 via-rose-500 to-red-500 shadow-pink-500/25',
   blue: 'bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-blue-500/25',
   orange: 'bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 shadow-orange-500/25',
-  purple: 'bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 shadow-purple-500/25'
+  purple: 'bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 shadow-purple-500/25',
+  yellow: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 shadow-yellow-500/25'
 }
+
+// Computed để xác định màu động cho card ánh sáng
+const dynamicColorClass = computed(() => {
+  // Kiểm tra nếu đây là card ánh sáng và giá trị > 600
+  if (props.title === 'lux' || props.title.toLowerCase().includes('lux')) {
+    // Extract numeric value từ string (loại bỏ "LUX", khoảng trắng...)
+    const numericValue = parseInt(props.value.replace(/[^\d]/g, '')) || 0
+    
+    if (numericValue > 600) {
+      return colorClasses.yellow
+    }
+  }
+  
+  // Trả về màu mặc định
+  return colorClasses[props.color] || colorClasses.blue
+})
 </script>

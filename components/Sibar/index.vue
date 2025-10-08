@@ -1,5 +1,6 @@
 <template>
-  <div class="w-64 lg:w-40  bg-primary  text-white flex flex-col min-h-screen">
+  <div class="w-64 lg:w-40 bg-primary text-white flex flex-col min-h-full">
+    <!-- Close button for mobile -->
     <div class="lg:hidden flex justify-end p-4">
       <button @click="$emit('close-mobile')" class="text-white hover:bg-white/10 p-2 rounded-lg transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -7,6 +8,8 @@
         </svg>
       </button>
     </div>
+    
+    <!-- Logo section -->
     <div class="flex flex-col items-center py-6">
       <IconHome class="w-8 h-8 lg:w-10 lg:h-10 mb-2" />
       <div class="text-sm lg:text-lg text-center font-bold px-2">
@@ -14,10 +17,17 @@
         <span class="hidden lg:block">SMART HOME</span>
       </div>
     </div>
+    
+    <!-- Navigation section -->
     <nav class="flex-1 py-6">
       <div class="space-y-2">
-        <SibarSidebarItem v-for="item in menuItems" :key="item.id" :item="item" :active="isActive(item.route)"
-          @click="handleItemClick(item)" />
+        <SibarSidebarItem 
+          v-for="item in menuItems" 
+          :key="item.id" 
+          :item="item" 
+          :active="isActive(item.route)"
+          @click="handleItemClick(item)" 
+        />
       </div>
     </nav>
   </div>
