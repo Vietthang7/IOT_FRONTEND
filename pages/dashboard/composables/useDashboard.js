@@ -139,7 +139,7 @@ export const useDashboard = () => {
     fetchDeviceStats()
     deviceStatsPollingInterval = setInterval(() => {
       fetchDeviceStats()
-    }, 5000) 
+    }, 30000) 
   }
 
   const stopPolling = () => {
