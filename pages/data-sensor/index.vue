@@ -329,9 +329,9 @@ const copyToClipboard = async (text, recordId) => {
       copiedId.value = null
     }, 2000)
 
-    console.log('✅ Copied to clipboard:', text)
+    console.log(' Copied to clipboard:', text)
   } catch (error) {
-    console.error('❌ Failed to copy:', error)
+    console.error(' Failed to copy:', error)
 
     // Fallback for older browsers
     try {
@@ -347,9 +347,9 @@ const copyToClipboard = async (text, recordId) => {
         copiedId.value = null
       }, 2000)
 
-      console.log('✅ Copied using fallback method:', text)
+      console.log('Copied using fallback method:', text)
     } catch (fallbackError) {
-      console.error('❌ Fallback copy also failed:', fallbackError)
+      console.error('Fallback copy also failed:', fallbackError)
     }
   }
 }
