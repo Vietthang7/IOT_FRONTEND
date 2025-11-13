@@ -79,20 +79,20 @@ const colorClasses = {
   orange: 'bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 shadow-orange-500/25',
   purple: 'bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 shadow-purple-500/25',
   yellow: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 shadow-yellow-500/25',
-  // ✅ THÊM MÀU TỐI CHO ÁNH SÁNG YẾU
+  //  THÊM MÀU TỐI CHO ÁNH SÁNG YẾU
   dark: 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 shadow-gray-700/25',
-  // ✅ MÀU XANH LÁ BT CHO ÁNH SÁNG VỪA
+  // MÀU XANH LÁ BT CHO ÁNH SÁNG VỪA
   lightGreen: 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-emerald-500/25'
 }
 
-// ✅ Computed để xác định màu động dựa trên giá trị ánh sáng
+// Computed để xác định màu động dựa trên giá trị ánh sáng
 const dynamicColorClass = computed(() => {
   // Kiểm tra nếu đây là card ánh sáng
   if (props.title === 'Ánh sáng' || props.title.toLowerCase().includes('ánh sáng')) {
     // Extract numeric value từ string (loại bỏ "LUX", khoảng trắng...)
     const numericValue = parseInt(props.value.replace(/[^\d]/g, '')) || 0
     
-    // ✅ Logic màu theo giá trị:
+    // Logic màu theo giá trị:
     if (numericValue <= 100) {
       return colorClasses.dark // Tối
     } else if (numericValue > 100 && numericValue <= 500) {
