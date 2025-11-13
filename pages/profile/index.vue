@@ -51,7 +51,7 @@
 
           <!-- PDF Link Section -->
           <div class="flex flex-col gap-1">
-            <a href="https://drive.google.com/file/d/1ex2rdXQr9LGhlG5ScezUGYpnu5pgCD_h/view?usp=sharing" target="_blank"
+            <a href="https://drive.google.com/file/d/1jvylQmuu73_sjzB8huBaPPoyBFhBEiOD/view?usp=drive_link" target="_blank"
               class="text-[#81c784] no-underline txt-lg transition-colors duration-300 hover:text-[#a5d6a7] hover:underline">
               Báo cáo (PDF)
             </a>

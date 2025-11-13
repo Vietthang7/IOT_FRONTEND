@@ -5,6 +5,9 @@ const API_ENDPOINTS = {
     data_sensor: "api/data_sensor",
     list_devices: "api/list_devices",
     control_device: "api/control_device",
+    device_stats_today: "api/device_stats/today",
+    device_stats_by_date: "api/device_stats",
+    device_stats_by_date_range : "/api/device_stats/by_date_range",
   },
 };
 class Request {
@@ -40,7 +43,7 @@ class Request {
   }
   // Thêm method cho $fetch (không cache, thực thi mỗi lần gọi)
   async directFetch(url, method, options) {
-    this.setAuthHeaders(); // ✅ TỰ ĐỘNG THÊM TOKEN
+    this.setAuthHeaders(); //  TỰ ĐỘNG THÊM TOKEN
 
     return await $fetch(url, {
       baseURL: this.baseURL,
@@ -90,6 +93,18 @@ class API {
   async getDataSensorv1(data) {
     return this.request.getDirect(`${API_ENDPOINTS.stores.data_sensor}`, data);
   }
+  //  MỚI: Lấy thống kê thiết bị hôm nay
+  async getDeviceStatsToday(data) {
+    return this.request.getDirect(`${API_ENDPOINTS.stores.device_stats_today}`, data);
+  }
+
+  //  MỚI: Lấy thống kê thiết bị theo ngày tùy chỉnh
+  async getDeviceStatsByDate(data) {
+    return this.request.getDirect(`${API_ENDPOINTS.stores.device_stats_by_date}`, data);
+  }
+  async getDeviceStatsByDateRange(data) {
+    return this.request.getDirect(`${API_ENDPOINTS.stores.device_stats_by_date_range}`, data);
+  }
   async getListDevice(data) {
     return this.request.get(`${API_ENDPOINTS.stores.list_devices}`, data);
   }
@@ -107,4 +122,6 @@ class RestAPI {
     this.stores = new API(this.request);
   }
 }
-export default () => ({ restAPI: new RestAPI() });
+export default () => ({
+  restAPI: new RestAPI()
+});
